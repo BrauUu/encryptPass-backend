@@ -1,5 +1,15 @@
 const moongose = require('../config/db')
-const bcrypt = require('bcrypt')
+const { hash } = require('bcrypt')
+const { default: mongoose } = require('mongoose')
+
+const RefreshToken = new mongoose.Schema({
+
+    expiresIn: {
+        type: Number,
+        required: true
+    }
+
+})
 
 const UserSchema = new moongose.Schema({
 
@@ -33,6 +43,22 @@ const UserSchema = new moongose.Schema({
         type: String,
         required: false,
         trim: true
+    },
+    passwordResetToken: {
+        type: String,
+        select: false
+    },
+    passwordRefreshToken: {
+        type: Date,
+        select: false
+    },
+    expirePassword: {
+        type: Date,
+        default: Date.now()
+    },
+    refreshToken: {
+        type: RefreshToken,
+        required: false
     }
 }, 
 {
@@ -42,10 +68,36 @@ const UserSchema = new moongose.Schema({
 
 UserSchema.pre('save', async function(next) {
 
-    const encryptedPass = await bcrypt.hash(this.password, 10);
+    const encryptedPass = await hash(this.password, 10);
     this.password = encryptedPass;
 
-    next();
+    return next();
+})
+
+UserSchema.pre('updateOne', async function (next) {
+
+    if(this._update.password) {
+        const encryptedPass = await hash(this._update.password, 10);
+        this._update.password = encryptedPass;
+    }
+
+    return next();
+})
+
+UserSchema.pre('resetForgotPassword', async function(next) {
+    if(this.reset.password) {
+        const encryptedPass = await hash(this.reset.password, 10);
+        this.reset.password = encryptedPass;
+    }
+    return next();
+})
+
+UserSchema.pre('resetExpirePassword', async function(next) {
+    if(this.reset.password) {
+        const encryptedPass = await hash(this.reset.password, 10);
+        this.reset.password = encryptedPass;
+    }
+    return next();
 })
 
 const User = moongose.model("User", UserSchema)

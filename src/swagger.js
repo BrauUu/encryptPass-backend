@@ -3,7 +3,8 @@ const swaggerAutogen = require('swagger-autogen')()
 const outputFile = './src/swagger.json'
 const endpointsFiles = [
     './src/routes/userRoutes.js',
-    './src/routes/credentialsRoutes.js'
+    './src/routes/credentialsRoutes.js',
+    './src/routes/folderRoutes.js'
 ]
 
 const doc = {
@@ -11,9 +12,9 @@ const doc = {
         version: "1.0.0",
         title: "EncryptPass"
     },
-    host: "localhost:3005",
+    host: "encryptpassapi.vercel.app",
     basePath: "/",
-    schemes: ['http'],
+    schemes: ['https'],
     consumes: ['application/json'],
     produces: ['application/json'],
     tags: [
@@ -21,7 +22,10 @@ const doc = {
             "name": "User",
         },
         {
-            "name" : "Credentials"
+            "name": "Credentials"
+        },
+        {
+            "name": "Folder"
         }
     ],
     definitions: {
@@ -33,13 +37,24 @@ const doc = {
             passwordReminderTip: "Some tip",
             phoneNumber: "34 99999-9999"
         },
+        Login: {
+            email: "jose@email.com",
+            password: "password"
+        },
+        Authorization: "Bearer Token",
+        Refreshtoken: {
+            refreshToken: "refreshToken"
+        },
         Credentials: {
             title: "Google",
             url: "https://www.google.com.br/",
             password: "password",
             login: "jose@email.com",
-            folderId: "6237a07d0c3f8033d777160e",
-            userId : "1237a41dsc3f8b33d72d160a"
+            folderId: "folderId"
+        },
+        Folder: {
+            title: "Séries",
+            description: "Pasta para séries da Netflix"
         }
     }
 }
